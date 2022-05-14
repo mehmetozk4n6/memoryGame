@@ -46,44 +46,43 @@ function PlayGround() {
   );
   const [openedFrameworks, setOpenedFrameworks] = useState([]);
 
+  useEffect(() => {
+    setFinalizedFrameworks([
+      ...finalizedFrameworks.map((item, index) =>
+        index === openedFrameworks[0]?.index ||
+        index === openedFrameworks[1]?.index
+          ? { ...item, close: false }
+          : item
+      ),
+    ]);
+    if (openedFrameworks?.length > 1) {
+      setTimeout(() => {
+        setFinalizedFrameworks([
+          ...finalizedFrameworks.map((item, index) =>
+            index === openedFrameworks[0].index ||
+            index === openedFrameworks[1].index
+              ? { ...item, close: true }
+              : item
+          ),
+        ]);
+        setTimeout(() => {
+          check();
+        }, 750);
+        setOpenedFrameworks([]);
+      }, 1500);
+    }
+  }, [openedFrameworks]);
+
   const handleClick = (name, index) => {
-    // if (openedFrameworks?.length > 1) {
-    //   setTimeout(() => {
-    //     check();
-    //   }, 10);
-    // } else {
     let framework = {
       name,
       index,
     };
-    setFinalizedFrameworks([
-      ...finalizedFrameworks.map((item, index) => {
-        if (index === openedFrameworks[0]?.index) {
-          return { ...item, close: false };
-        } else {
-          return item;
-        }
-      }),
-    ]);
     setOpenedFrameworks([...openedFrameworks, framework]);
-    // let finalized1Frameworks = finalizedFrameworks;
-    // let frameworks = [...openedFrameworks];
-    // finalized1Frameworks[index].close = false;
-    // frameworks.push(framework);
-    // setOpenedFrameworks(frameworks);
-    // setFinalizedFrameworks(finalized1Frameworks);
-
-    if (openedFrameworks?.length > 1) {
-      setTimeout(() => {
-        check();
-      }, 750);
-    }
-    // }
   };
 
   const check = () => {
     if (
-      openedFrameworks.length > 1 &&
       openedFrameworks[0].name === openedFrameworks[1].name &&
       openedFrameworks[0].index !== openedFrameworks[1].index
     ) {
@@ -99,24 +98,10 @@ function PlayGround() {
           }
         }),
       ]);
-      setOpenedFrameworks([]);
-    } else {
-      setFinalizedFrameworks([
-        ...finalizedFrameworks.map((item, index) => {
-          if (
-            index === openedFrameworks[0].index ||
-            index === openedFrameworks[1].index
-          ) {
-            return { ...item, close: true };
-          } else {
-            return item;
-          }
-        }),
-      ]);
-      setOpenedFrameworks([]);
     }
   };
-  console.log(openedFrameworks);
+  // console.log(openedFrameworks);
+  // console.log(finalizedFrameworks);
   return (
     <div className="playground">
       {finalizedFrameworks?.map((framework, index) => {
