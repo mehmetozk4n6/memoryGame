@@ -1,6 +1,6 @@
 netlify: https://zippy-rolypoly-4da4ed.netlify.app/
 
-dependencies: @reduxjs/toolkit, react-redux
+dependencies: @reduxjs/toolkit, react-redux, sweetalert2,react-countup
 
 # Memory Game
 

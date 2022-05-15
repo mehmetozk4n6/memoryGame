@@ -16,7 +16,7 @@ function PlayGround() {
 
   if (completedCards.length === 20) {
     Swal.fire({
-      title: "Do you want to save the changes?",
+      title: "Do you want to play again?",
       showCancelButton: true,
       confirmButtonText: "Restart",
     }).then((result) => {
