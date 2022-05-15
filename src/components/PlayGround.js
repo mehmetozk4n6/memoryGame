@@ -1,47 +1,32 @@
+import { React } from "react";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addFramework, updateFramework } from "../redux/frameWorkSlice";
 import { frameworkSelectors } from "../redux/frameWorkSlice";
-
+import { updatePoint } from "../redux/pointSlice";
+import Swal from "sweetalert2";
 import Card from "./Card";
-
-const frameworks = [
-  "angular2",
-  "vue",
-  "react",
-  "grunt",
-  "phantomjs",
-  "ember",
-  "babel",
-  "ionic",
-  "gulp",
-  "meteor",
-  // "yeoman",
-  // "yarn",
-  // "nodejs",
-  // "bower",
-  // "browserify",
-];
-const duplicatedFrameworks = [...frameworks, ...frameworks];
-const shuffle = (array) => {
-  let currentIndex = array.length,
-    temporaryValue,
-    randomIndex;
-
-  while (0 !== currentIndex) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-  return array;
-};
+import { duplicatedFrameworks, shuffle } from "./duplicatedFrameworks";
 
 function PlayGround() {
   const [openedFrameworks, setOpenedFrameworks] = useState([]);
   const dispatch = useDispatch();
   const frameworks = useSelector(frameworkSelectors.selectAll);
+  let completedCards = frameworks.filter((framework) => framework.complete);
+
+  if (completedCards.length === 20) {
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showCancelButton: true,
+      confirmButtonText: "Restart",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire("Loading!", "", "success");
+        window.location.reload();
+      }
+    });
+  }
 
   useEffect(() => {
     shuffle(duplicatedFrameworks).map((name, index) =>
@@ -70,19 +55,8 @@ function PlayGround() {
         )
       );
 
-    if (openedFrameworks?.length > 1) {
+    if (openedFrameworks.length > 1) {
       setTimeout(() => {
-        openedFrameworks.forEach((openedFramework) =>
-          dispatch(
-            updateFramework({
-              id: openedFramework.index,
-              changes: {
-                close: true,
-              },
-            })
-          )
-        );
-
         setTimeout(() => {
           if (
             openedFrameworks[0].name === openedFrameworks[1].name &&
@@ -98,10 +72,24 @@ function PlayGround() {
                 })
               )
             );
+            dispatch(updatePoint(50));
+          } else {
+            openedFrameworks.forEach((openedFramework) =>
+              dispatch(
+                updateFramework({
+                  id: openedFramework.index,
+                  changes: {
+                    close: true,
+                  },
+                })
+              )
+            );
+            dispatch(updatePoint(-10));
           }
         }, 750);
+
         setOpenedFrameworks([]);
-      }, 1500);
+      }, 1000);
     }
   }, [openedFrameworks, dispatch]);
 
@@ -112,25 +100,26 @@ function PlayGround() {
     };
     setOpenedFrameworks([...openedFrameworks, framework]);
   };
-  console.log(openedFrameworks);
+
   return (
     <div className="playground">
-      {frameworks?.map((framework, id) => {
-        return (
-          <Card
-            className={framework.complete ? "disabledPointer" : ""}
-            key={id}
-            framework={framework.name}
-            click={() => {
-              !framework.complete &&
-                openedFrameworks.length < 2 &&
-                handleClick(framework.name, id);
-            }}
-            close={framework.close}
-            complete={framework.complete}
-          />
-        );
-      })}
+      {frameworks.length > 0 &&
+        frameworks.map((framework, id) => {
+          return (
+            <Card
+              className={framework.complete ? "disabledPointer" : ""}
+              key={id}
+              framework={framework.name}
+              click={() => {
+                !framework.complete &&
+                  openedFrameworks.length < 2 &&
+                  handleClick(framework.name, id);
+              }}
+              close={framework.close}
+              complete={framework.complete}
+            />
+          );
+        })}
     </div>
   );
 }

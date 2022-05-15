@@ -88,3 +88,22 @@ body {
 .disabledPointer {
   pointer-events: none;
 }
+.pointer {
+  display: flex;
+  justify-content: center;
+  color: #fff;
+  padding: 5px;
+  margin-bottom: 10px;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+.pointer h1 {
+  margin: 0;
+}
+
+.pointer div {
+  display: flex;
+  justify-content: center;
+  background-color: burlywood;
+  border-radius: 30%;
+  padding: 0 10px;
+}
