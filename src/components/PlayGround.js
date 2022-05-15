@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { addFramework, updateFramework } from "../redux/frameWorkSlice";
+import { frameworkSelectors } from "../redux/frameWorkSlice";
 
 import Card from "./Card";
 
@@ -36,42 +39,71 @@ const shuffle = (array) => {
 };
 
 function PlayGround() {
-  const [finalizedFrameworks, setFinalizedFrameworks] = useState(
-    shuffle(duplicatedFrameworks).map((name, index) => ({
-      name,
-      close: true,
-      complete: false,
-      fail: false,
-    }))
-  );
   const [openedFrameworks, setOpenedFrameworks] = useState([]);
+  const dispatch = useDispatch();
+  const frameworks = useSelector(frameworkSelectors.selectAll);
 
   useEffect(() => {
-    setFinalizedFrameworks([
-      ...finalizedFrameworks.map((item, index) =>
-        index === openedFrameworks[0]?.index ||
-        index === openedFrameworks[1]?.index
-          ? { ...item, close: false }
-          : item
-      ),
-    ]);
+    shuffle(duplicatedFrameworks).map((name, index) =>
+      dispatch(
+        addFramework({
+          id: index,
+          name,
+          close: true,
+          complete: false,
+          fail: false,
+        })
+      )
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    openedFrameworks.length > 0 &&
+      openedFrameworks.forEach((openedFramework) =>
+        dispatch(
+          updateFramework({
+            id: openedFramework.index,
+            changes: {
+              close: false,
+            },
+          })
+        )
+      );
+
     if (openedFrameworks?.length > 1) {
       setTimeout(() => {
-        setFinalizedFrameworks([
-          ...finalizedFrameworks.map((item, index) =>
-            index === openedFrameworks[0].index ||
-            index === openedFrameworks[1].index
-              ? { ...item, close: true }
-              : item
-          ),
-        ]);
+        openedFrameworks.forEach((openedFramework) =>
+          dispatch(
+            updateFramework({
+              id: openedFramework.index,
+              changes: {
+                close: true,
+              },
+            })
+          )
+        );
+
         setTimeout(() => {
-          check();
+          if (
+            openedFrameworks[0].name === openedFrameworks[1].name &&
+            openedFrameworks[0].index !== openedFrameworks[1].index
+          ) {
+            openedFrameworks.forEach((openedFramework) =>
+              dispatch(
+                updateFramework({
+                  id: openedFramework.index,
+                  changes: {
+                    complete: true,
+                  },
+                })
+              )
+            );
+          }
         }, 750);
         setOpenedFrameworks([]);
       }, 1500);
     }
-  }, [openedFrameworks]);
+  }, [openedFrameworks, dispatch]);
 
   const handleClick = (name, index) => {
     let framework = {
@@ -81,36 +113,15 @@ function PlayGround() {
     setOpenedFrameworks([...openedFrameworks, framework]);
   };
 
-  const check = () => {
-    if (
-      openedFrameworks[0].name === openedFrameworks[1].name &&
-      openedFrameworks[0].index !== openedFrameworks[1].index
-    ) {
-      setFinalizedFrameworks([
-        ...finalizedFrameworks.map((item, index) => {
-          if (
-            index === openedFrameworks[0].index ||
-            index === openedFrameworks[1].index
-          ) {
-            return { ...item, complete: true };
-          } else {
-            return item;
-          }
-        }),
-      ]);
-    }
-  };
-  // console.log(openedFrameworks);
-  // console.log(finalizedFrameworks);
   return (
     <div className="playground">
-      {finalizedFrameworks?.map((framework, index) => {
+      {frameworks?.map((framework, id) => {
         return (
           <Card
-            key={index}
+            key={id}
             framework={framework.name}
             click={() => {
-              handleClick(framework.name, index);
+              handleClick(framework.name, id);
             }}
             close={framework.close}
             complete={framework.complete}

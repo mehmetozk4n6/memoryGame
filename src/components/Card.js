@@ -19,6 +19,7 @@ function Card({ framework, close, complete, click }) {
             framework +
             ".png"
           }
+          alt={`$framework`}
         />
       </div>
     </div>
