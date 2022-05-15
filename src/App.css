@@ -16,7 +16,7 @@ body {
   margin-bottom: -15px;
 }
 #app .playground .card {
-  width: 15%;
+  width: 18%;
   user-select: none;
   height: 110px;
   padding: 10px;
@@ -83,4 +83,8 @@ body {
   100% {
     opacity: 0.3;
   }
+}
+
+.disabledPointer {
+  pointer-events: none;
 }

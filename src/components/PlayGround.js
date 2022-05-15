@@ -16,11 +16,11 @@ const frameworks = [
   "ionic",
   "gulp",
   "meteor",
-  "yeoman",
-  "yarn",
-  "nodejs",
-  "bower",
-  "browserify",
+  // "yeoman",
+  // "yarn",
+  // "nodejs",
+  // "bower",
+  // "browserify",
 ];
 const duplicatedFrameworks = [...frameworks, ...frameworks];
 const shuffle = (array) => {
@@ -112,16 +112,19 @@ function PlayGround() {
     };
     setOpenedFrameworks([...openedFrameworks, framework]);
   };
-
+  console.log(openedFrameworks);
   return (
     <div className="playground">
       {frameworks?.map((framework, id) => {
         return (
           <Card
+            className={framework.complete ? "disabledPointer" : ""}
             key={id}
             framework={framework.name}
             click={() => {
-              handleClick(framework.name, id);
+              !framework.complete &&
+                openedFrameworks.length < 2 &&
+                handleClick(framework.name, id);
             }}
             close={framework.close}
             complete={framework.complete}
